@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { DataProps } from "../controllers/CreateNutritionController";
+import { DataProps } from "../Controllers/CreateNutritionController";
 
 class CreateNutritionService {
   async execute({
