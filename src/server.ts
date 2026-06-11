@@ -16,11 +16,17 @@ const start = async () => {
   app.register(routes);
 
   try {
-    await app.listen({ port: 3333, host: '0.0.0.0' });
-    console.log(`Server is running on http://localhost:3333`);
-  } catch (err) {
-    console.log(err);
-  }
+  await app.listen({
+    port: Number(process.env.PORT) || 3333,
+    host: '0.0.0.0',
+  });
+
+  console.log(
+    `Server is running on port ${process.env.PORT || 3333}`
+  );
+} catch (err) {
+  console.log(err);
+}
 };
 
 start();
