@@ -44,9 +44,8 @@ class CreateNutritionService {
         return { data: jsonObject };
       }
     } catch (err) {
-  console.error('ERRO COMPLETO GEMINI:', err);
-  throw err;
-}
+      console.error("ERRO COMPLETO GEMINI:", err);
+      throw err;
     }
   }
 }
