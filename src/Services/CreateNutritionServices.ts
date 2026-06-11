@@ -1,14 +1,22 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { DataProps } from '../Controllers/CreateNutritionController';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { DataProps } from "../Controllers/CreateNutritionController";
 
 class CreateNutritionService {
-  async execute({ name, age, gender, height, level, objective, weight }: DataProps) {
+  async execute({
+    name,
+    age,
+    gender,
+    height,
+    level,
+    objective,
+    weight,
+  }: DataProps) {
     // lógica do serviço
 
     try {
       const genAI = new GoogleGenerativeAI(process.env.API_KEY!);
 
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       const response = await model.generateContent(
         `
@@ -17,23 +25,28 @@ class CreateNutritionService {
         `,
       );
 
-      console.log(JSON.stringify(response, null, 2));
+      console.log("API_KEY existe?", !!process.env.API_KEY);
+      console.log("Resposta Gemini:", response);
 
       if (response.response && response.response.candidates) {
-        const jsonText = response.response.candidates[0]?.content.parts[0].text as string;
-
+        const jsonText = response.response.candidates[0]?.content.parts[0]
+          .text as string;
 
         //EXTRAIR O JSON
 
-        let jsonString = jsonText.replace(/```\w*\n/g, '').replace(/\n```/g, '').trim();
+        let jsonString = jsonText
+          .replace(/```\w*\n/g, "")
+          .replace(/\n```/g, "")
+          .trim();
 
         let jsonObject = JSON.parse(jsonString);
 
         return { data: jsonObject };
       }
     } catch (err) {
-      console.error('Erro JSON:', err);
-      throw new Error('failed create.');
+  console.error('ERRO COMPLETO GEMINI:', err);
+  throw err;
+}
     }
   }
 }
