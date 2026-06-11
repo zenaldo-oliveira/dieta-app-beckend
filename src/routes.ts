@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest } from 'fastify';
-import { CreateNutritionController } from './Controllers/CreateNutritionController';
+import { CreateNutritionController } from './controllers/CreateNutritionController';
 
 export async function routes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get('/teste', (request: FastifyRequest, reply: FastifyReply) => {
