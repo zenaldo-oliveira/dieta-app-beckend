@@ -11,38 +11,66 @@ class CreateNutritionService {
     objective,
     weight,
   }: DataProps) {
-    // lógica do serviço
-
     try {
+      console.log("API_KEY existe?", !!process.env.API_KEY);
+      console.log("Tamanho da chave:", process.env.API_KEY?.length);
+
       const genAI = new GoogleGenerativeAI(process.env.API_KEY!);
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash",
+      });
 
-      const response = await model.generateContent(
-        `
-        Crie uma dieta completa para uma pessoa com nome: ${name} do sexo ${gender} com peso atual: ${weight}kg, altura: ${height}, idade: ${age} anos e com foco e objetivo em ${objective}, atualmente no nível de atividade: ${level} e ignore qualquer outro parâmetro que não seja os passados. Retorne em JSON com as respectivas propriedades, propriedade nome o nome da pessoa, propriedade sexo com sexo, propriedade idade, propriedade altura, propriedade peso, propriedade objetivo com o objetivo atual, propriedade refeições com uma array contendo dentro cada objeto sendo uma refeição da dieta e dentro de cada refeição a propriedade horário com horário da refeição, propriedade nome com nome e a propriedade alimentos com array contendo os alimentos dessa refeição e pode incluir uma propriedade como suplementos contendo array com sugestão de suplemento que é indicado para o sexo dessa pessoa e o objetivo dela e não retorne nenhuma observação além das passadas no prompt, retorne em JSON e nenhuma propriedade pode ter acento.
+      const response = await model.generateContent(`
+Crie uma dieta completa para uma pessoa com:
 
-        `,
-      );
+Nome: ${name}
+Sexo: ${gender}
+Peso: ${weight}kg
+Altura: ${height}cm
+Idade: ${age} anos
+Objetivo: ${objective}
+Nível de atividade: ${level}
 
-      console.log("API_KEY existe?", !!process.env.API_KEY);
-      console.log("Resposta Gemini:", response);
+RETORNE APENAS JSON VÁLIDO.
 
-      if (response.response && response.response.candidates) {
-        const jsonText = response.response.candidates[0]?.content.parts[0]
-          .text as string;
+Formato:
 
-        //EXTRAIR O JSON
+{
+  "nome": "",
+  "sexo": "",
+  "idade": 0,
+  "altura": 0,
+  "peso": 0,
+  "objetivo": "",
+  "refeicoes": [
+    {
+      "horario": "",
+      "name": "",
+      "alimentos": []
+    }
+  ],
+  "suplementos": []
+}
 
-        let jsonString = jsonText
-          .replace(/```\w*\n/g, "")
-          .replace(/\n```/g, "")
-          .trim();
+Não escreva explicações.
+Não escreva markdown.
+Não use \`\`\`json.
+Retorne somente o JSON.
+`);
 
-        let jsonObject = JSON.parse(jsonString);
+      const jsonText =
+        response.response.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-        return { data: jsonObject };
-      }
+      console.log("RESPOSTA GEMINI:", jsonText);
+
+      const jsonString = jsonText.trim();
+
+      const jsonObject = JSON.parse(jsonString);
+
+      return {
+        data: jsonObject,
+      };
     } catch (err) {
       console.error("ERRO COMPLETO GEMINI:", err);
       throw err;
