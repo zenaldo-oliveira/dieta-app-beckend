@@ -1,10 +1,12 @@
 {
+  "name": "beckend",
+  "version": "1.0.0",
+  "description": "API REST desenvolvida com Fastify e Gemini AI para geração de dietas personalizadas.",
   "author": {
     "name": "Zenaldo Pereira de Oliveira",
     "url": "https://github.com/zenaldo-oliveira"
   },
-  "name": "beckend",
-  "version": "1.0.0",
+  "license": "MIT",
   "main": "src/server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",
