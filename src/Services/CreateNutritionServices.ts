@@ -23,8 +23,7 @@ class CreateNutritionService {
           responseMimeType: "application/json",
         },
       });
-
-      const response = await model.generateContent(`
+      const result = await model.generateContent(`
 Crie uma dieta completa para:
 
 Nome: ${name}
@@ -60,16 +59,32 @@ Nao escreva explicacoes.
 Retorne somente JSON.
 `);
 
-      const jsonText =
-        response.response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const text = result.response.text();
 
-      console.log("RESPOSTA GEMINI:", jsonText);
+      console.log("RESPOSTA GEMINI:", text);
 
-      const jsonObject = JSON.parse(jsonText);
+      try {
+        const jsonObject = JSON.parse(text);
 
-      return {
-        data: jsonObject,
-      };
+        return {
+          data: jsonObject,
+        };
+      } catch (error) {
+        console.error("JSON INVÁLIDO:", text);
+
+        return {
+          data: {
+            nome: name,
+            sexo: gender,
+            idade: Number(age),
+            altura: Number(height),
+            peso: Number(weight),
+            objetivo: objective,
+            refeicoes: [],
+            suplementos: [],
+          },
+        };
+      }
     } catch (err) {
       console.error("ERRO COMPLETO GEMINI:", err);
 
