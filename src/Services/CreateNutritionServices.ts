@@ -23,6 +23,7 @@ class CreateNutritionService {
           responseMimeType: "application/json",
         },
       });
+
       const result = await model.generateContent(`
 Crie uma dieta completa para:
 
@@ -62,6 +63,10 @@ Retorne somente JSON.
       const text = result.response.text();
 
       console.log("RESPOSTA GEMINI:", text);
+
+      if (!text) {
+        throw new Error("Gemini retornou resposta vazia");
+      }
 
       try {
         const jsonObject = JSON.parse(text);
