@@ -19,22 +19,23 @@ class CreateNutritionService {
 
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
+        generationConfig: {
+          responseMimeType: "application/json",
+        },
       });
 
       const response = await model.generateContent(`
-Crie uma dieta completa para uma pessoa com:
+Crie uma dieta completa para:
 
 Nome: ${name}
 Sexo: ${gender}
 Peso: ${weight}kg
 Altura: ${height}cm
-Idade: ${age} anos
+Idade: ${age}
 Objetivo: ${objective}
-Nível de atividade: ${level}
+Nivel de atividade: ${level}
 
-RETORNE APENAS JSON VÁLIDO.
-
-Formato:
+Retorne APENAS um JSON valido no formato:
 
 {
   "nome": "",
@@ -53,10 +54,10 @@ Formato:
   "suplementos": []
 }
 
-Não escreva explicações.
-Não escreva markdown.
-Não use \`\`\`json.
-Retorne somente o JSON.
+Nao utilize markdown.
+Nao utilize crases.
+Nao escreva explicacoes.
+Retorne somente JSON.
 `);
 
       const jsonText =
@@ -64,16 +65,26 @@ Retorne somente o JSON.
 
       console.log("RESPOSTA GEMINI:", jsonText);
 
-      const jsonString = jsonText.trim();
-
-      const jsonObject = JSON.parse(jsonString);
+      const jsonObject = JSON.parse(jsonText);
 
       return {
         data: jsonObject,
       };
     } catch (err) {
       console.error("ERRO COMPLETO GEMINI:", err);
-      throw err;
+
+      return {
+        data: {
+          nome: name,
+          sexo: gender,
+          idade: Number(age),
+          altura: Number(height),
+          peso: Number(weight),
+          objetivo: objective,
+          refeicoes: [],
+          suplementos: [],
+        },
+      };
     }
   }
 }
